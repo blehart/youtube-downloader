@@ -6,4 +6,6 @@ Pass one or more video/playlist URLs as command line arguments, with optional -a
 
 Always selects the highest quality available.
 
+URLs with '&' in them (multiple url variables) need to be in quotes.
+
 

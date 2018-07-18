@@ -21,7 +21,7 @@ def downloadBest(url, video=True):
     if video: file = meta.getbest()
     else: file = meta.getbestaudio(preftype="m4a")
     file.download()
-    print("Finished: ", meta.title, "                                                               ")
+    print("Finished: ", meta.title, "\t\t\t\t\t")
     
 if __name__ == "__main__":
     args = parser.parse_args()
