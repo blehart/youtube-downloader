@@ -15,12 +15,11 @@ def download(urls, audio):
         if 'playlist' in url:
             playlist = pafy.get_playlist(url)
             for item in playlist['items']:
-                executor.submit(downloadBest, item['pafy'].videoid, audio)
+                executor.submit(downloadBest, item['pafy'], audio)
         else:
-            executor.submit(downloadBest, url, audio)
+            executor.submit(downloadBest, pafy.new(url), audio)
         
-def downloadBest(url, audio):
-    meta = pafy.new(url)
+def downloadBest(meta, audio):
     file = meta.getbestaudio(preftype="m4a") if audio else meta.getbest()
     file.download()
     print("Finished: ", meta.title, "\t\t\t\t\t")
