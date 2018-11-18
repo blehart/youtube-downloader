@@ -2,35 +2,28 @@
 
 import sys
 import pafy
+import click
 import threading
-import argparse
 from concurrent.futures import ThreadPoolExecutor
 
-parser = argparse.ArgumentParser()
-parser.add_argument('url', nargs='*')
-parser.add_argument('-a', '--audio', action='store_true')
-
-def download(urls=[], video=True):
+@click.command()
+@click.argument('urls', nargs=-1)
+@click.option('-a', '--audio', is_flag=True)
+def download(urls, audio):
     executor = ThreadPoolExecutor(max_workers=8)
     for url in urls:
         if 'playlist' in url:
             playlist = pafy.get_playlist(url)
             for item in playlist['items']:
-                executor.submit(downloadBest, item['pafy'].videoid, video)
-                #pool.apply_async(downloadBest, (item['pafy'].videoid, video))
-                # threading.Thread(target=downloadBest, args=(item['pafy'].videoid, video)).start()
+                executor.submit(downloadBest, item['pafy'].videoid, audio)
         else:
-            executor.submit(downloadBest, url, video)
-            #pool.apply_async(downloadBest, (url, video))
-            # threading.Thread(target=downloadBest, args=(url, video)).start() 
+            executor.submit(downloadBest, url, audio)
         
-def downloadBest(url, video=True):
+def downloadBest(url, audio):
     meta = pafy.new(url)
-    if video: file = meta.getbest()
-    else: file = meta.getbestaudio(preftype="m4a")
-    file.download(quiet=True)
+    file = meta.getbestaudio(preftype="m4a") if audio else meta.getbest()
+    file.download()
     print("Finished: ", meta.title, "\t\t\t\t\t")
     
 if __name__ == "__main__":
-    args = parser.parse_args()
-    download(args.url, not args.audio)
+    download()
