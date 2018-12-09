@@ -7,13 +7,16 @@ import click
 @click.command()
 @click.argument('urls', nargs=-1)
 @click.option('-a', '--audio', is_flag=True)
-def download(urls, audio):
+@click.option('-ps', '--pstart', type=int, default = 1)
+@click.option('-pe', '--pend', type=int, default=10000)
+def download(urls, audio, pstart, pend):
     """Calls download_best for each video url."""
     executor = ThreadPoolExecutor(max_workers=8)
     for url in urls:
         if 'playlist' in url:
             playlist = pafy.get_playlist(url)
-            for item in playlist['items']:
+            end = min(pend, len(playlist['items']))
+            for item in playlist['items'][pstart-1:end]:
                 executor.submit(download_best, item['pafy'], audio)
         else:
             executor.submit(download_best, pafy.new(url), audio)
